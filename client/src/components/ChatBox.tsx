@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import axios from "axios";
+import { sendMessage } from "../services/api";
 
 interface Message {
   role: "user" | "assistant";
@@ -34,13 +34,11 @@ const ChatBox = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post("http://localhost:8000/chat", {
-        message: input,
-      });
+      const reply = await sendMessage(input);
 
       const aiMessage: Message = {
         role: "assistant",
-        content: response.data.reply,
+        content: reply,
       };
 
       setMessages((prev) => [...prev, aiMessage]);
@@ -59,9 +57,9 @@ const ChatBox = () => {
 
   return (
     <div className="w-[400px] h-[600px] bg-white rounded-2xl shadow-xl flex flex-col overflow-hidden">
-      
+
       {/* Header */}
-      <div className="bg-green-500 text-white p-4 font-semibold">
+      <div className="bg-green-500 text-white p-4 font-semibold text-center">
         Resume AI Assistant
       </div>
 
@@ -70,7 +68,7 @@ const ChatBox = () => {
         {messages.map((msg, index) => (
           <div
             key={index}
-            className={`max-w-[75%] px-4 py-2 rounded-2xl text-sm ${
+            className={`max-w-[75%] px-4 py-2 rounded-2xl text-sm break-words ${
               msg.role === "user"
                 ? "bg-green-500 text-white ml-auto rounded-br-none"
                 : "bg-gray-300 text-black mr-auto rounded-bl-none"
